@@ -1,0 +1,208 @@
+{
+  "projects": [
+    {
+      "id": "proj-001",
+      "title": "Remont łazienki - Mokotów",
+      "category": "lazienki-kuchnie",
+      "location": "Warszawa, Mokotów",
+      "scope": "Kompleksowy remont łazienki - hydraulika, elektryka, płytki",
+      "area": "6m²",
+      "duration": "10 dni",
+      "year": "2024",
+      "description": "Nowoczesna łazienka z walk-in shower i płytkami wielkoformatowymi",
+      "features": ["Płytki 60x120cm", "Kabina walk-in", "Podłogówka", "Oświetlenie LED"],
+      "images": [
+        {
+          "id": "img-001",
+          "filename": "proj-001_lazienka_1.jpg",
+          "url": "/UBR/images/projects/lazienki-kuchnie/proj-001_lazienka_1.jpg",
+          "caption": "Widok ogólny łazienki",
+          "isMain": true,
+          "order": 1
+        },
+        {
+          "id": "img-002",
+          "filename": "proj-001_lazienka_2.jpg", 
+          "url": "/UBR/images/projects/lazienki-kuchnie/proj-001_lazienka_2.jpg",
+          "caption": "Kabina prysznicowa",
+          "isMain": false,
+          "order": 2
+        }
+      ],
+      "createdAt": "2024-06-28T10:00:00Z",
+      "isVisible": true,
+      "order": 1
+    },
+    {
+      "id": "proj-002",
+      "title": "Kuchnia na wymiar - Wilanów",
+      "category": "lazienki-kuchnie",
+      "location": "Warszawa, Wilanów",
+      "scope": "Remont kuchni z zabudową na wymiar i sprzętem AGD",
+      "area": "15m²",
+      "duration": "2 tygodnie",
+      "year": "2024",
+      "description": "Jasna kuchnia z białymi frontami i drewnianym blatem",
+      "features": ["Fronty lakierowane", "Blat dębowy", "Piekarnik Electrolux", "Zmywarka Bosch"],
+      "images": [
+        {
+          "id": "img-003",
+          "filename": "proj-002_kuchnia_1.jpg",
+          "url": "/UBR/images/projects/lazienki-kuchnie/proj-002_kuchnia_1.jpg",
+          "caption": "Widok ogólny kuchni",
+          "isMain": true,
+          "order": 1
+        }
+      ],
+      "createdAt": "2024-05-15T10:00:00Z",
+      "isVisible": true,
+      "order": 2
+    },
+    {
+      "id": "proj-003",
+      "title": "Mieszkanie 2-pokojowe Wola",
+      "category": "mieszkania",
+      "location": "Warszawa, Wola",
+      "scope": "Kompleksowy remont mieszkania z układem otwartym",
+      "area": "52m²",
+      "duration": "5 tygodni",
+      "year": "2024",
+      "description": "Jasne mieszkanie z otwartą kuchnią i salonem",
+      "features": ["Parkiet dębowy", "Sufity napinane", "Klimatyzacja", "Zabudowa na wymiar"],
+      "images": [
+        {
+          "id": "img-004",
+          "filename": "proj-003_mieszkanie_1.jpg",
+          "url": "/UBR/images/projects/mieszkania/proj-003_mieszkanie_1.jpg",
+          "caption": "Salon po remoncie",
+          "isMain": true,
+          "order": 1
+        },
+        {
+          "id": "img-005",
+          "filename": "proj-003_mieszkanie_2.jpg",
+          "url": "/UBR/images/projects/mieszkania/proj-003_mieszkanie_2.jpg",
+          "caption": "Sypialnia",
+          "isMain": false,
+          "order": 2
+        }
+      ],
+      "createdAt": "2024-04-10T10:00:00Z",
+      "isVisible": true,
+      "order": 3
+    },
+    {
+      "id": "proj-004",
+      "title": "Dom szeregowy Konstancin",
+      "category": "domy-jednorodzinne",
+      "location": "Konstancin-Jeziorna",
+      "scope": "Wykończenie wnętrza domu szeregowego pod klucz",
+      "area": "140m²",
+      "duration": "8 tygodni",
+      "year": "2024",
+      "description": "Nowoczesne wnętrze z elementami klasycznymi",
+      "features": ["Gres drewnopodobny", "Schody dębowe", "Kominek gazowy", "Suche zabudowy"],
+      "images": [
+        {
+          "id": "img-006",
+          "filename": "proj-004_dom_1.jpg",
+          "url": "/UBR/images/projects/domy-jednorodzinne/proj-004_dom_1.jpg",
+          "caption": "Salon z kominkiem",
+          "isMain": true,
+          "order": 1
+        }
+      ],
+      "createdAt": "2024-03-01T10:00:00Z",
+      "isVisible": true,
+      "order": 4
+    },
+    {
+      "id": "proj-005",
+      "title": "Adaptacja poddasza Ursynów",
+      "category": "wykonczennia",
+      "location": "Warszawa, Ursynów",
+      "scope": "Przebudowa poddasza na pokój dzienny z sypialnią",
+      "area": "35m²",
+      "duration": "3 tygodnie",
+      "year": "2024",
+      "description": "Przytulne poddasze z maksymalnym wykorzystaniem przestrzeni",
+      "features": ["Okna dachowe Velux", "Zabudowy wnękowe", "Panele winylowe", "Oświetlenie LED"],
+      "images": [
+        {
+          "id": "img-007",
+          "filename": "proj-005_poddasze_1.jpg",
+          "url": "/UBR/images/projects/wykonczennia/proj-005_poddasze_1.jpg",
+          "caption": "Pokój na poddaszu",
+          "isMain": true,
+          "order": 1
+        }
+      ],
+      "createdAt": "2024-02-20T10:00:00Z",
+      "isVisible": true,
+      "order": 5
+    },
+    {
+      "id": "proj-006",
+      "title": "Elewacja domu Piaseczno",
+      "category": "dachy-elewacje",
+      "location": "Piaseczno",
+      "scope": "Ocieplenie i odnowienie elewacji domu jednorodzinnego",
+      "area": "180m²",
+      "duration": "2 tygodnie",
+      "year": "2024",
+      "description": "Nowoczesna elewacja z tynkiem mineralnym",
+      "features": ["Styropian grafitowy", "Tynk mineralny", "Obróbki aluminiowe", "Farba silikonowa"],
+      "images": [
+        {
+          "id": "img-008",
+          "filename": "proj-006_elewacja_1.jpg",
+          "url": "/UBR/images/projects/dachy-elewacje/proj-006_elewacja_1.jpg",
+          "caption": "Elewacja po remoncie",
+          "isMain": true,
+          "order": 1
+        }
+      ],
+      "createdAt": "2024-01-15T10:00:00Z",
+      "isVisible": true,
+      "order": 6
+    }
+  ],
+  "categories": [
+    {
+      "id": "lazienki-kuchnie",
+      "name": "Łazienki & Kuchnie",
+      "icon": "🛁",
+      "order": 1
+    },
+    {
+      "id": "mieszkania", 
+      "name": "Mieszkania",
+      "icon": "🏠",
+      "order": 2
+    },
+    {
+      "id": "wykonczennia",
+      "name": "Wykończenia",
+      "icon": "🎨",
+      "order": 3
+    },
+    {
+      "id": "domy-jednorodzinne",
+      "name": "Domy jednorodzinne",
+      "icon": "🏡",
+      "order": 4
+    },
+    {
+      "id": "remonty-kapitalne",
+      "name": "Remonty kapitalne",
+      "icon": "🔨",
+      "order": 5
+    },
+    {
+      "id": "dachy-elewacje",
+      "name": "Dachy & Elewacje",
+      "icon": "🏘️",
+      "order": 6
+    }
+  ]
+}
