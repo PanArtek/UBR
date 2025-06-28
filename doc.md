@@ -493,3 +493,30 @@ npm run preview
 **LIVE WEBSITE**: https://panartek.github.io/UBR/
 
 The UBR Portfolio website is successfully deployed and fully functional, ready for real-world use by the construction company. The foundation is solid for future enhancements and content updates.
+
+## 2025-06-28
+
+### Complete UX/UI Redesign and Navigation Fix
+- **Time**: 12:00
+- **Action**: Kompletne przeprojektowanie interfejsu użytkownika i naprawa nawigacji
+- **Files Modified**:
+  - src/pages/index.astro - kompletny redesign wszystkich sekcji
+  - src/components/Navigation.astro - nowy design z backdrop blur i poprawione linki
+  - astro.config.mjs - poprawiony base path na '/UBR'
+- **Design Changes**:
+  - Hero Section: glass morphism, gradient backgrounds, animowane elementy
+  - Services Section: numerowane karty z hover effects i gradient backgrounds
+  - Features Section: connecting lines dla desktop, gradient icons
+  - CTA Section: trust indicators, rozbudowane przyciski
+  - Footer: pełne informacje kontaktowe, quick links, dane firmy
+  - Navigation: backdrop blur, lepszy mobile menu, hover effects
+- **Bug Fixes**:
+  - Naprawiono wszystkie linki nawigacji z właściwym base path
+  - Poprawiono responsywność (RWD) dla wszystkich urządzeń
+  - Naprawiono błąd navItems w footer
+- **CSS Loading Fix**:
+  - Skopiowano pliki CSS do głównego katalogu dla GitHub Pages
+  - Dodano .nojekyll dla właściwego serwowania assetów
+- **Performance**: Build successful, wszystkie 7 stron wygenerowane poprawnie
+- **Status**: ✅ **WEBSITE LIVE WITH MODERN DESIGN**
+- **URL**: https://panartek.github.io/UBR/
