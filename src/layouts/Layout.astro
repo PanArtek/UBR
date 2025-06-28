@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'UBR - Profesjonalne usługi budowlane. Specjalizujemy się w budowie domów, remontach mieszkań i wykończeniach wnętrz.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | UBR - Usługi Budowlane</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${title} | UBR`} />
+    <meta property="og:description" content={description} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={`${title} | UBR`} />
+    <meta property="twitter:description" content={description} />
+    
+    <!-- Schema.org markup for Google -->
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "HomeAndConstructionBusiness",
+        "name": "UBR - Usługi Budowlane",
+        "description": description,
+        "url": "https://PanArtek.github.io/UBR",
+        "telephone": "+48 XXX XXX XXX",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Warszawa",
+          "addressRegion": "Mazowieckie",
+          "addressCountry": "PL"
+        },
+        "priceRange": "$$"
+      })}
+    </script>
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <slot />
+  </body>
+</html>

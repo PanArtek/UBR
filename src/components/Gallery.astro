@@ -1,0 +1,147 @@
+---
+export interface Props {
+  category?: string;
+  limit?: number;
+}
+
+const { category = 'all', limit = 12 } = Astro.props;
+
+const categories = [
+  { id: 'all', name: 'Wszystkie', path: '' },
+  { id: 'domy-jednorodzinne', name: 'Domy jednorodzinne', path: 'domy-jednorodzinne' },
+  { id: 'mieszkania', name: 'Mieszkania', path: 'mieszkania' },
+  { id: 'remonty-kapitalne', name: 'Remonty kapitalne', path: 'remonty-kapitalne' },
+  { id: 'wykonczennia', name: 'Wykończenia', path: 'wykonczennia' },
+  { id: 'dachy-elewacje', name: 'Dachy i elewacje', path: 'dachy-elewacje' },
+  { id: 'lazienki-kuchnie', name: 'Łazienki i kuchnie', path: 'lazienki-kuchnie' },
+];
+
+// Placeholder projects data - in production, this would come from actual image files
+const projects = [
+  {
+    id: 1,
+    title: 'Dom jednorodzinny - Warszawa',
+    category: 'domy-jednorodzinne',
+    image: '/images/placeholder.svg',
+    description: 'Nowoczesny dom 150m2',
+    date: '2024-03',
+  },
+  {
+    id: 2,
+    title: 'Remont mieszkania 3-pokojowego',
+    category: 'mieszkania',
+    image: '/images/placeholder.svg',
+    description: 'Kompleksowy remont 65m2',
+    date: '2024-02',
+  },
+  {
+    id: 3,
+    title: 'Łazienka w stylu modern',
+    category: 'lazienki-kuchnie',
+    image: '/images/placeholder.svg',
+    description: 'Elegancka łazienka z prysznicem',
+    date: '2024-01',
+  },
+  // Add more placeholder projects as needed
+];
+
+const filteredProjects = category === 'all' 
+  ? projects.slice(0, limit)
+  : projects.filter(p => p.category === category).slice(0, limit);
+---
+
+<div class="gallery-container">
+  <!-- Category Filter -->
+  <div class="mb-8 overflow-x-auto">
+    <div class="flex space-x-2 min-w-max pb-2">
+      {categories.map((cat) => (
+        <button
+          data-category={cat.id}
+          class={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+            category === cat.id
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          {cat.name}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Gallery Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {filteredProjects.map((project) => (
+      <div class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+        <div class="aspect-w-16 aspect-h-12 bg-gray-200">
+          <img
+            src={project.image}
+            alt={project.title}
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+            <h3 class="text-lg font-semibold mb-1">{project.title}</h3>
+            <p class="text-sm">{project.description}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- No Projects Message -->
+  {filteredProjects.length === 0 && (
+    <div class="text-center py-12">
+      <p class="text-gray-500">Brak projektów w tej kategorii. Wkrótce dodamy więcej realizacji!</p>
+    </div>
+  )}
+</div>
+
+<style>
+  .aspect-w-16 {
+    position: relative;
+    padding-bottom: 75%; /* 4:3 Aspect Ratio */
+  }
+  
+  .aspect-w-16 > * {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+</style>
+
+<script>
+  // Gallery category filtering
+  const categoryButtons = document.querySelectorAll('[data-category]');
+  
+  categoryButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const target = e.target as HTMLButtonElement;
+      const category = target.dataset.category;
+      
+      // Update URL without page reload
+      const url = new URL(window.location.href);
+      if (category === 'all') {
+        url.searchParams.delete('category');
+      } else {
+        url.searchParams.set('category', category);
+      }
+      window.history.pushState({}, '', url);
+      
+      // In a real implementation, this would trigger a re-render or filter
+      // For now, we'll just update the active state visually
+      categoryButtons.forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      });
+      target.classList.remove('bg-gray-200', 'text-gray-700');
+      target.classList.add('bg-blue-600', 'text-white');
+    });
+  });
+</script>

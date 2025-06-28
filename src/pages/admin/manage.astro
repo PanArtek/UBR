@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Placeholder data for demo
+const projects = [
+  { id: 1, name: 'Dom jednorodzinny - Warszawa', category: 'domy-jednorodzinne', date: '2024-03-15', photos: 5 },
+  { id: 2, name: 'Remont mieszkania 3-pokojowego', category: 'mieszkania', date: '2024-02-20', photos: 8 },
+  { id: 3, name: 'Łazienka w stylu modern', category: 'lazienki-kuchnie', date: '2024-01-10', photos: 4 },
+];
+---
+
+<Layout title="Zarządzaj galerią" description="Panel zarządzania galerią">
+  <div class="min-h-screen bg-gray-100 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Back Button -->
+      <a href="/admin" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+        ← Powrót do panelu
+      </a>
+      
+      <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-gray-900">
+            Zarządzaj galerią
+          </h1>
+          <a
+            href="/admin/upload"
+            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
+          >
+            + Dodaj nowy projekt
+          </a>
+        </div>
+        
+        <!-- Projects Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Projekt
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Kategoria
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Data
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Zdjęcia
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Akcje
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {projects.map((project) => (
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {project.name}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {project.category}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(project.date).toLocaleDateString('pl-PL')}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {project.photos}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button class="text-blue-600 hover:text-blue-900 mr-4">
+                      Edytuj
+                    </button>
+                    <button class="text-red-600 hover:text-red-900">
+                      Usuń
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {projects.length === 0 && (
+          <div class="text-center py-12">
+            <p class="text-gray-500">Brak projektów w galerii</p>
+            <a
+              href="/admin/upload"
+              class="text-blue-600 hover:text-blue-800 mt-2 inline-block"
+            >
+              Dodaj pierwszy projekt
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Demo functionality
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', () => {
+        if (button.textContent === 'Usuń') {
+          if (confirm('Czy na pewno chcesz usunąć ten projekt?')) {
+            alert('Funkcja usuwania będzie dostępna w przyszłej wersji');
+          }
+        } else if (button.textContent === 'Edytuj') {
+          alert('Funkcja edycji będzie dostępna w przyszłej wersji');
+        }
+      });
+    });
+  </script>
+</Layout>

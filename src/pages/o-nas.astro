@@ -1,0 +1,171 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+
+const stats = [
+  { number: '15+', label: 'Lat doświadczenia' },
+  { number: '500+', label: 'Zrealizowanych projektów' },
+  { number: '98%', label: 'Zadowolonych klientów' },
+  { number: '50+', label: 'Pracowników' },
+];
+
+const values = [
+  {
+    title: 'Jakość',
+    description: 'Używamy tylko najlepszych materiałów i sprawdzonych technologii budowlanych.',
+  },
+  {
+    title: 'Terminowość',
+    description: 'Dotrzymujemy ustalonych terminów i informujemy o postępach prac.',
+  },
+  {
+    title: 'Transparentność',
+    description: 'Jasne wyceny bez ukrytych kosztów. Zawsze wiesz, za co płacisz.',
+  },
+  {
+    title: 'Profesjonalizm',
+    description: 'Nasz zespół to wykwalifikowani specjaliści z wieloletnim doświadczeniem.',
+  },
+];
+---
+
+<Layout title="O nas" description="Poznaj firmę UBR - profesjonalne usługi budowlane z 15-letnim doświadczeniem. Budowa domów, remonty, wykończenia.">
+  <Navigation />
+  
+  <!-- Page Header -->
+  <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-center">
+        O firmie UBR
+      </h1>
+      <p class="text-xl text-center mt-4 max-w-2xl mx-auto">
+        Budujemy z pasją od ponad 15 lat
+      </p>
+    </div>
+  </section>
+
+  <!-- About Content -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-6">
+            Kim jesteśmy?
+          </h2>
+          <div class="space-y-4 text-gray-600">
+            <p>
+              UBR to firma budowlana z ponad 15-letnim doświadczeniem na rynku. 
+              Specjalizujemy się w kompleksowej realizacji projektów budowlanych - 
+              od budowy domów jednorodzinnych, przez remonty mieszkań, po profesjonalne 
+              wykończenia wnętrz.
+            </p>
+            <p>
+              Nasz zespół to wykwalifikowani specjaliści, którzy z pasją podchodzą 
+              do każdego projektu. Stawiamy na najwyższą jakość wykonania, terminowość 
+              i pełną transparentność w relacjach z klientami.
+            </p>
+            <p>
+              Przez lata działalności zrealizowaliśmy setki projektów, zdobywając 
+              zaufanie i uznanie klientów. Nasze portfolio obejmuje zarówno małe 
+              remonty, jak i kompleksowe inwestycje budowlane.
+            </p>
+          </div>
+        </div>
+        <div class="bg-gray-200 rounded-lg h-96 flex items-center justify-center">
+          <p class="text-gray-600">Zdjęcie zespołu lub biura</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+        UBR w liczbach
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {stats.map((stat) => (
+          <div class="text-center">
+            <div class="text-4xl md:text-5xl font-bold text-blue-600 mb-2">
+              {stat.number}
+            </div>
+            <p class="text-gray-600">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+        Nasze wartości
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {values.map((value) => (
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              {value.title}
+            </h3>
+            <p class="text-gray-600">{value.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+        Nasz zespół
+      </h2>
+      <div class="text-center max-w-3xl mx-auto">
+        <p class="text-lg text-gray-600 mb-8">
+          Nasz zespół to ponad 50 wykwalifikowanych specjalistów: inżynierów, 
+          architektów, mistrzów budowlanych i wykończeniowców. Każdy projekt 
+          realizujemy z pełnym zaangażowaniem i dbałością o szczegóły.
+        </p>
+        <div class="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+          <p class="text-gray-600">Zdjęcie zespołu</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        Poznajmy się lepiej
+      </h2>
+      <p class="text-xl mb-8 max-w-2xl mx-auto">
+        Zapraszamy do kontaktu. Chętnie odpowiemy na wszystkie pytania 
+        i przygotujemy indywidualną ofertę.
+      </p>
+      <a
+        href="/kontakt"
+        class="bg-orange-500 text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-orange-600 transition-colors duration-200 inline-block"
+      >
+        Skontaktuj się z nami
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <span class="text-2xl font-bold">UBR</span>
+          <p class="text-gray-400">Profesjonalne usługi budowlane</p>
+        </div>
+        <div class="text-center md:text-right">
+          <p class="text-gray-400">&copy; 2025 UBR. Wszystkie prawa zastrzeżone.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</Layout>
