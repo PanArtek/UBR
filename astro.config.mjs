@@ -5,8 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://PanArtek.github.io',
-  base: process.env.NODE_ENV === 'production' ? '/UBR' : '/',
+  site: 'https://PanArtek.github.io/UBR',
+  base: '/',
   output: 'static',
 
   build: {
