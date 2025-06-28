@@ -128,11 +128,40 @@ import Layout from '../../layouts/Layout.astro';
       }
     }
     
-    handleLogin() {
+    async handleLogin() {
       const pinInput = document.getElementById('pin');
       const errorMessage = document.getElementById('errorMessage');
       const pin = pinInput?.value;
       
+      try {
+        // First try PHP API authentication
+        const response = await fetch('/api/auth.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'login',
+            pin: pin
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            // PHP API authentication successful
+            this.showSuccess();
+            setTimeout(() => {
+              this.redirectToDashboard();
+            }, 1500);
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn('PHP API not available, using client-side validation:', error);
+      }
+      
+      // Fallback to client-side validation (for GitHub Pages)
       if (pin === this.correctPin) {
         // Store login state
         sessionStorage.setItem('ubr_admin_logged_in', 'true');

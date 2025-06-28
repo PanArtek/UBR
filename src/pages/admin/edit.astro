@@ -470,22 +470,6 @@ import Layout from '../../layouts/Layout.astro';
     async handleSubmit() {
       const formData = new FormData(document.getElementById('projectForm'));
       
-      // Collect form data
-      const projectData = {
-        id: this.isEditMode ? this.currentProjectId : this.generateId(),
-        title: formData.get('title'),
-        category: formData.get('category'),
-        location: formData.get('location'),
-        area: formData.get('area'),
-        year: formData.get('year') || new Date().getFullYear().toString(),
-        description: formData.get('description'),
-        scope: formData.get('scope'),
-        features: this.features,
-        isVisible: formData.get('isVisible') === 'on',
-        createdAt: this.isEditMode ? undefined : new Date().toISOString(),
-        order: this.isEditMode ? undefined : Date.now()
-      };
-      
       // Show loading state
       const submitBtn = document.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
@@ -493,8 +477,41 @@ import Layout from '../../layouts/Layout.astro';
       submitBtn.disabled = true;
       
       try {
-        // Save to localStorage (for demo/static site)
-        this.saveProjectToLocalStorage(projectData);
+        // First upload images if any
+        let uploadedImages = [];
+        if (this.images.length > 0) {
+          uploadedImages = await this.uploadImages();
+        }
+        
+        // Collect form data
+        const projectData = {
+          id: this.isEditMode ? this.currentProjectId : this.generateId(),
+          title: formData.get('title'),
+          category: formData.get('category'),
+          location: formData.get('location'),
+          area: formData.get('area'),
+          year: formData.get('year') || new Date().getFullYear().toString(),
+          description: formData.get('description'),
+          scope: formData.get('scope'),
+          features: this.features,
+          isVisible: formData.get('isVisible') === 'on',
+          createdAt: this.isEditMode ? undefined : new Date().toISOString(),
+          order: this.isEditMode ? undefined : Date.now(),
+          images: uploadedImages.length > 0 ? uploadedImages : this.collectImageData()
+        };
+        
+        // Try to save via PHP API first
+        let success = false;
+        try {
+          success = await this.saveProjectToAPI(projectData);
+        } catch (error) {
+          console.warn('PHP API not available, falling back to localStorage:', error);
+        }
+        
+        // Fallback to localStorage if API not available
+        if (!success) {
+          await this.saveProjectToLocalStorage(projectData);
+        }
         
         this.showNotification(
           this.isEditMode ? 'Projekt został zaktualizowany!' : 'Projekt został dodany!',
@@ -574,6 +591,79 @@ import Layout from '../../layouts/Layout.astro';
       });
       
       return images;
+    }
+    
+    async uploadImages() {
+      if (this.images.length === 0) return [];
+      
+      const uploadFormData = new FormData();
+      this.images.forEach((file, index) => {
+        uploadFormData.append('photos[]', file);
+      });
+      
+      // Get project info for proper file naming
+      const category = document.getElementById('category').value;
+      const projectName = document.getElementById('title').value;
+      
+      uploadFormData.append('category', category);
+      uploadFormData.append('project_name', projectName);
+      
+      try {
+        const response = await fetch('/api/upload.php', {
+          method: 'POST',
+          body: uploadFormData
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            console.log('Images uploaded successfully:', result.files);
+            return result.files.map((file, index) => ({
+              id: `img-${Date.now()}-${index}`,
+              filename: file.filename,
+              url: file.url,
+              caption: `${projectName} - zdjęcie ${index + 1}`,
+              isMain: index === 0,
+              order: index + 1
+            }));
+          } else {
+            throw new Error('Upload failed: ' + (result.error || 'Unknown error'));
+          }
+        } else {
+          throw new Error('Upload request failed');
+        }
+      } catch (error) {
+        console.error('Image upload error:', error);
+        throw error;
+      }
+    }
+    
+    async saveProjectToAPI(projectData) {
+      try {
+        const method = this.isEditMode ? 'PUT' : 'POST';
+        const response = await fetch('/api/projects.php', {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(projectData)
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            console.log('Project saved via API:', result.project);
+            return true;
+          } else {
+            throw new Error('API save failed: ' + (result.error || 'Unknown error'));
+          }
+        } else {
+          throw new Error('API request failed');
+        }
+      } catch (error) {
+        console.error('API save error:', error);
+        throw error;
+      }
     }
     
     showNotification(message, type = 'info') {

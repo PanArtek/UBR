@@ -217,21 +217,38 @@ const initialProjects = projects.filter(p => p.isVisible) || [];
     }
     
     async loadProjects() {
-      // Load JSON projects
-      let jsonProjects = [];
+      // First try PHP API (for HostMark.pl)
+      let apiProjects = [];
       try {
-        const response = await fetch('/UBR/data/projects.json');
-        const data = await response.json();
-        jsonProjects = data.projects.filter(p => p.isVisible);
+        const response = await fetch('/api/projects.php');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            apiProjects = data.projects;
+            console.log('Loaded projects from PHP API:', apiProjects.length);
+          }
+        }
       } catch (error) {
-        console.warn('Could not load projects data:', error);
+        console.warn('PHP API not available, falling back to JSON:', error);
       }
       
-      // Load localStorage projects
+      // Fallback to JSON projects (for GitHub Pages)
+      let jsonProjects = [];
+      if (apiProjects.length === 0) {
+        try {
+          const response = await fetch('/UBR/data/projects.json');
+          const data = await response.json();
+          jsonProjects = data.projects.filter(p => p.isVisible);
+        } catch (error) {
+          console.warn('Could not load projects data:', error);
+        }
+      }
+      
+      // Load localStorage projects (demo functionality)
       const localProjects = this.getLocalStorageProjects();
       
-      // Combine and sort by order (newest first)
-      this.projects = [...jsonProjects, ...localProjects]
+      // Combine all sources and sort by order (newest first)
+      this.projects = [...apiProjects, ...jsonProjects, ...localProjects]
         .filter(p => p.isVisible)
         .sort((a, b) => (b.order || 0) - (a.order || 0));
       
