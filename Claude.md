@@ -340,3 +340,35 @@ npx @astrojs/image-tools optimize ./public/images/
 - Node.js and Git should work identically to native Linux
 - Consider using VS Code with Remote-WSL extension for seamless development
 - File permissions usually not an issue for this static site setup
+## Documentation and Context Management
+
+### Automatic Documentation Requirements
+
+**IMPORTANT: Claude Code MUST maintain a development log in `doc.md` file for context continuity.**
+
+### Documentation Rules
+
+1. **Always update `doc.md`** after every significant change or feature addition
+2. **Include timestamp** and brief description of what was done
+3. **Document decisions** made during development (why certain approaches were chosen)
+4. **Track file changes** - which files were created, modified, or deleted
+5. **Note dependencies** added or removed
+6. **Record configuration changes** (astro.config.mjs, package.json, etc.)
+
+### doc.md Structure
+
+```markdown
+# UBR Portfolio Development Log
+
+## 2024-06-28
+
+### Initial Setup
+- **Time**: 10:30
+- **Action**: Project initialization with Astro
+- **Files Created**: 
+  - astro.config.mjs
+  - package.json
+  - src/layouts/Layout.astro
+  - src/pages/index.astro
+- **Dependencies**: astro, @astrojs/tailwind, tailwindcss
+- **Notes**: Configured for GitHub Pages deployment with base path
