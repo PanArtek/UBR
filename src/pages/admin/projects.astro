@@ -1,0 +1,384 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Panel UBR - Zarządzanie projektami" description="Zarządzanie projektami UBR">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Auth check -->
+    <div id="authCheck" class="hidden min-h-screen bg-gray-100 flex items-center justify-center">
+      <div class="text-center">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Brak autoryzacji</h2>
+        <p class="text-gray-600 mb-6">Musisz się zalogować, aby uzyskać dostęp do panelu.</p>
+        <a href="/UBR/admin/" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+          Przejdź do logowania
+        </a>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div id="mainContent" class="p-4">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- Header z przyciskami -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 bg-white p-6 rounded-lg shadow-sm">
+          <div class="mb-4 md:mb-0">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">📁 Zarządzanie projektami</h1>
+            <p class="text-gray-600">Panel administratora UBR</p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button onclick="showAddForm()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-sm">
+              ➕ Nowy projekt
+            </button>
+            <button onclick="logout()" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold shadow-sm">
+              🚪 Wyloguj
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <div class="text-2xl font-bold text-blue-600" id="totalProjects">0</div>
+            <div class="text-sm text-gray-600">Wszystkie projekty</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <div class="text-2xl font-bold text-green-600" id="visibleProjects">0</div>
+            <div class="text-sm text-gray-600">Opublikowane</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <div class="text-2xl font-bold text-orange-600" id="totalImages">0</div>
+            <div class="text-sm text-gray-600">Zdjęcia</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <div class="text-2xl font-bold text-purple-600" id="categories">6</div>
+            <div class="text-sm text-gray-600">Kategorie</div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+          <div class="flex flex-wrap gap-3 items-center">
+            <div class="flex items-center gap-2">
+              <label class="text-sm font-medium text-gray-700">Filtruj:</label>
+              <select id="categoryFilter" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                <option value="">Wszystkie kategorie</option>
+                <option value="lazienki-kuchnie">🛁 Łazienki & Kuchnie</option>
+                <option value="mieszkania">🏠 Mieszkania</option>
+                <option value="wykonczennia">🎨 Wykończenia</option>
+                <option value="domy-jednorodzinne">🏡 Domy jednorodzinne</option>
+                <option value="remonty-kapitalne">🔨 Remonty kapitalne</option>
+                <option value="dachy-elewacje">🏘️ Dachy & Elewacje</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-sm font-medium text-gray-700">Status:</label>
+              <select id="statusFilter" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+                <option value="">Wszystkie</option>
+                <option value="visible">Opublikowane</option>
+                <option value="hidden">Ukryte</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista projektów -->
+        <div id="projectsList" class="space-y-4">
+          <!-- Projects will be loaded here -->
+        </div>
+
+        <!-- Loading state -->
+        <div id="loadingState" class="text-center py-12">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p class="mt-2 text-gray-600">Ładowanie projektów...</p>
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="hidden text-center py-12">
+          <div class="text-6xl mb-4">📁</div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Brak projektów</h3>
+          <p class="text-gray-600 mb-6">Rozpocznij od dodania pierwszego projektu</p>
+          <button onclick="showAddForm()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+            ➕ Dodaj pierwszy projekt
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .project-card {
+    transition: all 0.2s ease;
+  }
+  
+  .project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .project-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .project-actions button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  class ProjectsManager {
+    constructor() {
+      this.projects = [];
+      this.filteredProjects = [];
+      this.init();
+    }
+    
+    async init() {
+      // Check authentication first
+      if (!this.isLoggedIn()) {
+        this.showAuthError();
+        return;
+      }
+      
+      // Show main content
+      document.getElementById('mainContent').style.display = 'block';
+      
+      // Load projects and setup
+      await this.loadProjects();
+      this.updateStats();
+      this.renderProjects();
+      this.setupFilters();
+    }
+    
+    isLoggedIn() {
+      const isLoggedIn = sessionStorage.getItem('ubr_admin_logged_in');
+      const loginTime = sessionStorage.getItem('ubr_admin_login_time');
+      
+      if (!isLoggedIn || !loginTime) return false;
+      
+      // Check if session is not older than 8 hours
+      const now = Date.now();
+      const sessionAge = now - parseInt(loginTime);
+      const maxAge = 8 * 60 * 60 * 1000;
+      
+      return sessionAge <= maxAge;
+    }
+    
+    showAuthError() {
+      document.getElementById('authCheck').classList.remove('hidden');
+      document.getElementById('mainContent').style.display = 'none';
+    }
+    
+    async loadProjects() {
+      try {
+        const response = await fetch('/UBR/data/projects.json');
+        const data = await response.json();
+        this.projects = data.projects || [];
+        this.filteredProjects = [...this.projects];
+        document.getElementById('loadingState').style.display = 'none';
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        this.projects = [];
+        this.filteredProjects = [];
+        document.getElementById('loadingState').style.display = 'none';
+      }
+    }
+    
+    updateStats() {
+      const totalProjects = this.projects.length;
+      const visibleProjects = this.projects.filter(p => p.isVisible).length;
+      const totalImages = this.projects.reduce((acc, p) => acc + (p.images?.length || 0), 0);
+      
+      document.getElementById('totalProjects').textContent = totalProjects;
+      document.getElementById('visibleProjects').textContent = visibleProjects;
+      document.getElementById('totalImages').textContent = totalImages;
+    }
+    
+    setupFilters() {
+      const categoryFilter = document.getElementById('categoryFilter');
+      const statusFilter = document.getElementById('statusFilter');
+      
+      [categoryFilter, statusFilter].forEach(filter => {
+        if (filter) {
+          filter.addEventListener('change', () => this.applyFilters());
+        }
+      });
+    }
+    
+    applyFilters() {
+      const categoryFilter = document.getElementById('categoryFilter')?.value;
+      const statusFilter = document.getElementById('statusFilter')?.value;
+      
+      this.filteredProjects = this.projects.filter(project => {
+        const categoryMatch = !categoryFilter || project.category === categoryFilter;
+        const statusMatch = !statusFilter || 
+          (statusFilter === 'visible' && project.isVisible) ||
+          (statusFilter === 'hidden' && !project.isVisible);
+        
+        return categoryMatch && statusMatch;
+      });
+      
+      this.renderProjects();
+    }
+    
+    renderProjects() {
+      const container = document.getElementById('projectsList');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (this.filteredProjects.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      
+      container.innerHTML = this.filteredProjects.map(project => `
+        <div class="project-card bg-white rounded-lg shadow-sm border p-6">
+          <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="font-semibold text-lg text-gray-800 truncate">${project.title}</h3>
+                <span class="px-2 py-1 text-xs rounded-full ${project.isVisible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                  ${project.isVisible ? '👁️ Widoczny' : '🙈 Ukryty'}
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-2 text-sm text-gray-600 mb-2">
+                <span class="flex items-center gap-1">
+                  📍 ${project.location}
+                </span>
+                <span class="flex items-center gap-1">
+                  📐 ${project.area}
+                </span>
+                <span class="flex items-center gap-1">
+                  📅 ${project.year}
+                </span>
+                <span class="flex items-center gap-1">
+                  📷 ${project.images?.length || 0} zdjęć
+                </span>
+              </div>
+              <p class="text-sm text-gray-700 mb-3 line-clamp-2">${project.description}</p>
+              <div class="flex flex-wrap gap-1">
+                ${(project.features || []).slice(0, 3).map(feature => 
+                  `<span class="bg-blue-50 text-blue-800 text-xs px-2 py-1 rounded">${feature}</span>`
+                ).join('')}
+                ${project.features?.length > 3 ? `<span class="text-gray-500 text-xs">+${project.features.length - 3}</span>` : ''}
+              </div>
+            </div>
+            <div class="project-actions flex gap-2 flex-shrink-0">
+              <button onclick="editProject('${project.id}')" 
+                      class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-2">
+                ✏️ Edytuj
+              </button>
+              <button onclick="toggleVisibility('${project.id}')" 
+                      class="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-700 transition-colors flex items-center gap-2">
+                ${project.isVisible ? '🙈 Ukryj' : '👁️ Pokaż'}
+              </button>
+              <button onclick="deleteProject('${project.id}')" 
+                      class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors flex items-center gap-2">
+                🗑️ Usuń
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    editProject(projectId) {
+      window.location.href = `/UBR/admin/edit/?id=${projectId}`;
+    }
+    
+    toggleVisibility(projectId) {
+      // In production, this would make an API call
+      const project = this.projects.find(p => p.id === projectId);
+      if (project) {
+        project.isVisible = !project.isVisible;
+        this.updateStats();
+        this.renderProjects();
+        
+        // Show feedback
+        this.showNotification(
+          `Projekt "${project.title}" został ${project.isVisible ? 'opublikowany' : 'ukryty'}`,
+          'success'
+        );
+      }
+    }
+    
+    deleteProject(projectId) {
+      const project = this.projects.find(p => p.id === projectId);
+      if (!project) return;
+      
+      if (confirm(`Czy na pewno chcesz usunąć projekt "${project.title}"?\n\nTa operacja jest nieodwracalna.`)) {
+        // In production, this would make an API call
+        this.projects = this.projects.filter(p => p.id !== projectId);
+        this.applyFilters();
+        this.updateStats();
+        
+        this.showNotification(`Projekt "${project.title}" został usunięty`, 'success');
+      }
+    }
+    
+    showNotification(message, type = 'info') {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 translate-x-full ${
+        type === 'success' ? 'bg-green-600' : 
+        type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+      }`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Animate in
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+      }, 100);
+      
+      // Animate out and remove
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+    
+    logout() {
+      if (confirm('Czy na pewno chcesz się wylogować?')) {
+        sessionStorage.removeItem('ubr_admin_logged_in');
+        sessionStorage.removeItem('ubr_admin_login_time');
+        window.location.href = '/UBR/admin/';
+      }
+    }
+  }
+  
+  // Global functions for onclick handlers
+  window.showAddForm = () => {
+    window.location.href = '/UBR/admin/edit/';
+  };
+  
+  window.editProject = (projectId) => {
+    window.projectsManager.editProject(projectId);
+  };
+  
+  window.toggleVisibility = (projectId) => {
+    window.projectsManager.toggleVisibility(projectId);
+  };
+  
+  window.deleteProject = (projectId) => {
+    window.projectsManager.deleteProject(projectId);
+  };
+  
+  window.logout = () => {
+    window.projectsManager.logout();
+  };
+  
+  // Initialize manager
+  document.addEventListener('DOMContentLoaded', () => {
+    window.projectsManager = new ProjectsManager();
+  });
+</script>

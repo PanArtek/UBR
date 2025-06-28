@@ -1,4 +1,6 @@
 ---
+import ProjectPlaceholder from './ProjectPlaceholder.astro';
+
 export interface Props {
   category?: string;
   limit?: number;
@@ -6,86 +8,96 @@ export interface Props {
 
 const { category = 'all', limit = 12 } = Astro.props;
 
-const categories = [
-  { id: 'all', name: 'Wszystkie', path: '' },
-  { id: 'domy-jednorodzinne', name: 'Domy jednorodzinne', path: 'domy-jednorodzinne' },
-  { id: 'mieszkania', name: 'Mieszkania', path: 'mieszkania' },
-  { id: 'remonty-kapitalne', name: 'Remonty kapitalne', path: 'remonty-kapitalne' },
-  { id: 'wykonczennia', name: 'Wykończenia', path: 'wykonczennia' },
-  { id: 'dachy-elewacje', name: 'Dachy i elewacje', path: 'dachy-elewacje' },
-  { id: 'lazienki-kuchnie', name: 'Łazienki i kuchnie', path: 'lazienki-kuchnie' },
-];
+// Load projects from JSON
+let projectsData;
+try {
+  const response = await fetch(`${Astro.site || 'https://panartek.github.io'}${import.meta.env.BASE_URL}data/projects.json`);
+  projectsData = await response.json();
+} catch (error) {
+  // Fallback data if JSON is not available
+  projectsData = {
+    projects: [],
+    categories: [
+      { id: 'lazienki-kuchnie', name: 'Łazienki & Kuchnie', icon: '🛁', order: 1 },
+      { id: 'mieszkania', name: 'Mieszkania', icon: '🏠', order: 2 },
+      { id: 'wykonczennia', name: 'Wykończenia', icon: '🎨', order: 3 },
+      { id: 'domy-jednorodzinne', name: 'Domy jednorodzinne', icon: '🏡', order: 4 },
+      { id: 'remonty-kapitalne', name: 'Remonty kapitalne', icon: '🔨', order: 5 },
+      { id: 'dachy-elewacje', name: 'Dachy & Elewacje', icon: '🏘️', order: 6 }
+    ]
+  };
+}
 
-// Placeholder projects data - in production, this would come from actual image files
-const projects = [
-  {
-    id: 1,
-    title: 'Dom jednorodzinny - Warszawa',
-    category: 'domy-jednorodzinne',
-    image: '/images/placeholder.svg',
-    description: 'Nowoczesny dom 150m2',
-    date: '2024-03',
-  },
-  {
-    id: 2,
-    title: 'Remont mieszkania 3-pokojowego',
-    category: 'mieszkania',
-    image: '/images/placeholder.svg',
-    description: 'Kompleksowy remont 65m2',
-    date: '2024-02',
-  },
-  {
-    id: 3,
-    title: 'Łazienka w stylu modern',
-    category: 'lazienki-kuchnie',
-    image: '/images/placeholder.svg',
-    description: 'Elegancka łazienka z prysznicem',
-    date: '2024-01',
-  },
-  // Add more placeholder projects as needed
-];
+const { projects, categories } = projectsData;
+const visibleProjects = projects.filter(p => p.isVisible) || [];
 
 const filteredProjects = category === 'all' 
-  ? projects.slice(0, limit)
-  : projects.filter(p => p.category === category).slice(0, limit);
+  ? visibleProjects.slice(0, limit)
+  : visibleProjects.filter(p => p.category === category).slice(0, limit);
 ---
 
 <div class="gallery-container">
-  <!-- Category Filter -->
-  <div class="mb-8 overflow-x-auto">
-    <div class="flex space-x-2 min-w-max pb-2">
-      {categories.map((cat) => (
-        <button
-          data-category={cat.id}
-          class={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-            category === cat.id
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
-        >
-          {cat.name}
-        </button>
-      ))}
+  <!-- Filtry kategorii -->
+  <div class="category-filters mb-8">
+    <div class="flex flex-wrap justify-center gap-3">
+      <button data-category="all" class="filter-btn active">
+        Wszystkie ({visibleProjects.length})
+      </button>
+      {categories.map(cat => {
+        const count = visibleProjects.filter(p => p.category === cat.id).length;
+        return (
+          <button data-category={cat.id} class="filter-btn">
+            {cat.icon} {cat.name} ({count})
+          </button>
+        );
+      })}
     </div>
   </div>
 
-  <!-- Gallery Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {filteredProjects.map((project) => (
-      <div class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-        <div class="aspect-w-16 aspect-h-12 bg-gray-200">
-          <img
-            src={project.image}
-            alt={project.title}
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-          />
+  <!-- Grid projektów -->
+  <div class="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {filteredProjects.map((project, index) => (
+      <div class="project-card glass-card hover-lift cursor-pointer" 
+           data-category={project.category}
+           onclick={`openLightbox('${project.id}')`}>
+        
+        <!-- Zdjęcie główne lub placeholder -->
+        <div class="project-image relative">
+          {project.images?.length > 0 ? (
+            <img src={project.images.find(img => img.isMain)?.url || project.images[0].url} 
+                 alt={project.title}
+                 class="w-full h-48 object-cover rounded-t-lg" 
+                 loading="lazy" />
+          ) : (
+            <ProjectPlaceholder category={project.category} width={400} height={192} index={index} />
+          )}
+          
+          {/* Badge z liczbą zdjęć */}
+          {project.images?.length > 1 && (
+            <div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+              📷 {project.images.length}
+            </div>
+          )}
         </div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-            <h3 class="text-lg font-semibold mb-1">{project.title}</h3>
-            <p class="text-sm">{project.description}</p>
-          </div>
+
+        <!-- Informacje o projekcie -->
+        <div class="project-info p-4">
+          <h3 class="font-semibold text-lg mb-2">{project.title}</h3>
+          <p class="text-gray-600 text-sm mb-2">{project.location} • {project.area}</p>
+          <p class="text-gray-700 text-sm line-clamp-2">{project.description}</p>
+          
+          {project.features && (
+            <div class="features mt-3 flex flex-wrap gap-1">
+              {project.features.slice(0, 3).map(feature => (
+                <span class="bg-blue-50 text-blue-800 text-xs px-2 py-1 rounded">
+                  {feature}
+                </span>
+              ))}
+              {project.features.length > 3 && (
+                <span class="text-gray-500 text-xs">+{project.features.length - 3}</span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     ))}
@@ -99,49 +111,242 @@ const filteredProjects = category === 'all'
   )}
 </div>
 
+<!-- Lightbox Component -->
+<div id="lightbox" class="lightbox fixed inset-0 z-50 hidden items-center justify-center bg-black/90">
+  <div class="lightbox-content relative max-w-4xl max-h-[90vh] mx-4">
+    <button id="lightboxClose" class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300 transition-colors">
+      &times;
+    </button>
+    
+    <div class="lightbox-image-container relative">
+      <img id="lightboxImage" src="" alt="" class="max-w-full max-h-[70vh] object-contain rounded-lg" />
+      
+      <div class="lightbox-info absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white rounded-b-lg">
+        <h3 id="lightboxTitle" class="text-xl font-semibold mb-2"></h3>
+        <p id="lightboxDescription" class="text-sm opacity-90 mb-2"></p>
+        <div class="lightbox-details flex gap-4 text-sm">
+          <span id="lightboxLocation"></span>
+          <span id="lightboxArea"></span>
+        </div>
+      </div>
+    </div>
+    
+    <button id="lightboxPrev" class="absolute top-1/2 -left-16 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white text-2xl w-12 h-12 rounded-full flex items-center justify-center transition-all">
+      &#8249;
+    </button>
+    <button id="lightboxNext" class="absolute top-1/2 -right-16 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white text-2xl w-12 h-12 rounded-full flex items-center justify-center transition-all">
+      &#8250;
+    </button>
+  </div>
+</div>
+
 <style>
-  .aspect-w-16 {
-    position: relative;
-    padding-bottom: 75%; /* 4:3 Aspect Ratio */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
   
-  .aspect-w-16 > * {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+  .hover-lift {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+    transition: all 0.2s;
+  }
+  
+  .filter-btn:hover {
+    background-color: #eff6ff;
+  }
+  
+  .filter-btn.active {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+  
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  @media (max-width: 768px) {
+    .lightbox-content #lightboxPrev,
+    .lightbox-content #lightboxNext {
+      display: none;
+    }
+    
+    .lightbox-content {
+      margin: 0 0.5rem;
+    }
   }
 </style>
 
 <script>
-  // Gallery category filtering
-  const categoryButtons = document.querySelectorAll('[data-category]');
-  
-  categoryButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      const target = e.target as HTMLButtonElement;
-      const category = target.dataset.category;
-      
-      // Update URL without page reload
-      const url = new URL(window.location.href);
-      if (category === 'all') {
-        url.searchParams.delete('category');
-      } else {
-        url.searchParams.set('category', category);
+  // Gallery functionality
+  class GalleryManager {
+    constructor() {
+      this.projects = [];
+      this.currentProjectId = null;
+      this.currentImageIndex = 0;
+      this.init();
+    }
+    
+    async init() {
+      await this.loadProjects();
+      this.bindEvents();
+    }
+    
+    async loadProjects() {
+      try {
+        const response = await fetch('/UBR/data/projects.json');
+        const data = await response.json();
+        this.projects = data.projects.filter(p => p.isVisible);
+      } catch (error) {
+        console.warn('Could not load projects data:', error);
+        this.projects = [];
       }
-      window.history.pushState({}, '', url);
-      
-      // In a real implementation, this would trigger a re-render or filter
-      // For now, we'll just update the active state visually
-      categoryButtons.forEach(btn => {
-        btn.classList.remove('bg-blue-600', 'text-white');
-        btn.classList.add('bg-gray-200', 'text-gray-700');
+    }
+    
+    bindEvents() {
+      // Filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          this.filterProjects(e.target.dataset.category);
+        });
       });
-      target.classList.remove('bg-gray-200', 'text-gray-700');
-      target.classList.add('bg-blue-600', 'text-white');
-    });
+      
+      // Lightbox controls
+      const lightboxClose = document.getElementById('lightboxClose');
+      const lightboxPrev = document.getElementById('lightboxPrev');
+      const lightboxNext = document.getElementById('lightboxNext');
+      const lightbox = document.getElementById('lightbox');
+      
+      if (lightboxClose) lightboxClose.addEventListener('click', () => this.closeLightbox());
+      if (lightboxPrev) lightboxPrev.addEventListener('click', () => this.prevImage());
+      if (lightboxNext) lightboxNext.addEventListener('click', () => this.nextImage());
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (lightbox && lightbox.classList.contains('flex')) {
+          switch(e.key) {
+            case 'Escape': this.closeLightbox(); break;
+            case 'ArrowLeft': this.prevImage(); break;
+            case 'ArrowRight': this.nextImage(); break;
+          }
+        }
+      });
+      
+      // Close on backdrop click
+      if (lightbox) {
+        lightbox.addEventListener('click', (e) => {
+          if (e.target.id === 'lightbox') {
+            this.closeLightbox();
+          }
+        });
+      }
+    }
+    
+    filterProjects(category) {
+      const projectCards = document.querySelectorAll('.project-card');
+      projectCards.forEach(card => {
+        const shouldShow = category === 'all' || card.dataset.category === category;
+        card.style.display = shouldShow ? 'block' : 'none';
+      });
+    }
+    
+    openLightbox(projectId) {
+      const project = this.projects.find(p => p.id === projectId);
+      if (!project || !project.images?.length) return;
+      
+      this.currentProjectId = projectId;
+      this.currentImageIndex = 0;
+      this.updateLightboxImage();
+      
+      const lightbox = document.getElementById('lightbox');
+      if (lightbox) {
+        lightbox.classList.replace('hidden', 'flex');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      if (lightbox) {
+        lightbox.classList.replace('flex', 'hidden');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    prevImage() {
+      const project = this.projects.find(p => p.id === this.currentProjectId);
+      if (!project?.images?.length) return;
+      
+      this.currentImageIndex = this.currentImageIndex > 0 
+        ? this.currentImageIndex - 1 
+        : project.images.length - 1;
+      this.updateLightboxImage();
+    }
+    
+    nextImage() {
+      const project = this.projects.find(p => p.id === this.currentProjectId);
+      if (!project?.images?.length) return;
+      
+      this.currentImageIndex = this.currentImageIndex < project.images.length - 1 
+        ? this.currentImageIndex + 1 
+        : 0;
+      this.updateLightboxImage();
+    }
+    
+    updateLightboxImage() {
+      const project = this.projects.find(p => p.id === this.currentProjectId);
+      if (!project?.images?.length) return;
+      
+      const image = project.images[this.currentImageIndex];
+      const lightboxImage = document.getElementById('lightboxImage');
+      const lightboxTitle = document.getElementById('lightboxTitle');
+      const lightboxDescription = document.getElementById('lightboxDescription');
+      const lightboxLocation = document.getElementById('lightboxLocation');
+      const lightboxArea = document.getElementById('lightboxArea');
+      
+      if (lightboxImage) lightboxImage.src = image.url;
+      if (lightboxTitle) lightboxTitle.textContent = project.title;
+      if (lightboxDescription) lightboxDescription.textContent = image.caption || project.description;
+      if (lightboxLocation) lightboxLocation.textContent = project.location;
+      if (lightboxArea) lightboxArea.textContent = project.area;
+    }
+  }
+  
+  // Global functions for onclick handlers
+  window.openLightbox = (projectId) => {
+    if (window.galleryManager) {
+      window.galleryManager.openLightbox(projectId);
+    }
+  };
+  
+  // Initialize gallery
+  document.addEventListener('DOMContentLoaded', () => {
+    window.galleryManager = new GalleryManager();
   });
 </script>
