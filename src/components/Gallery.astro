@@ -54,46 +54,56 @@ const initialProjects = projects.filter(p => p.isVisible) || [];
   </div>
 
   <!-- Grid projektów -->
-  <div class="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     {initialProjects.map((project, index) => (
-      <div class="project-card glass-card hover-lift cursor-pointer" 
+      <div class="project-card card animate-fadeIn" 
+           style={`animation-delay: ${index * 0.1}s;`}
            data-category={project.category}
            onclick={`openLightbox('${project.id}')`}>
         
         <!-- Zdjęcie główne lub placeholder -->
-        <div class="project-image relative">
+        <div class="project-image relative overflow-hidden rounded-t-lg">
           {project.images?.length > 0 ? (
             <img src={project.images.find(img => img.isMain)?.url || project.images[0].url} 
                  alt={project.title}
-                 class="w-full h-48 object-cover rounded-t-lg" 
+                 class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" 
                  loading="lazy" />
           ) : (
-            <ProjectPlaceholder category={project.category} width={400} height={192} index={index} />
+            <ProjectPlaceholder category={project.category} width={400} height={256} index={index} />
           )}
           
           {/* Badge z liczbą zdjęć */}
           {project.images?.length > 1 && (
-            <div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+            <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full">
               📷 {project.images.length}
             </div>
           )}
+          
+          {/* Gradient overlay */}
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </div>
 
         <!-- Informacje o projekcie -->
-        <div class="project-info p-4">
-          <h3 class="font-semibold text-lg mb-2">{project.title}</h3>
-          <p class="text-gray-600 text-sm mb-2">{project.location} • {project.area}</p>
-          <p class="text-gray-700 text-sm line-clamp-2">{project.description}</p>
+        <div class="project-info p-6">
+          <h3 class="font-bold text-xl mb-2 group-hover:text-[#31EC56] transition-colors duration-300">{project.title}</h3>
+          <p class="text-gray-600 text-sm mb-3 flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#EF036C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            {project.location} • {project.area}
+          </p>
+          <p class="text-gray-700 text-sm line-clamp-2 mb-4">{project.description}</p>
           
           {project.features && (
-            <div class="features mt-3 flex flex-wrap gap-1">
+            <div class="features flex flex-wrap gap-2">
               {project.features.slice(0, 3).map(feature => (
-                <span class="bg-blue-50 text-blue-800 text-xs px-2 py-1 rounded">
+                <span class="bg-[#31EC56]/10 text-[#31EC56] text-xs font-medium px-3 py-1 rounded-full">
                   {feature}
                 </span>
               ))}
               {project.features.length > 3 && (
-                <span class="text-gray-500 text-xs">+{project.features.length - 3}</span>
+                <span class="text-gray-500 text-xs font-medium">+{project.features.length - 3}</span>
               )}
             </div>
           )}
@@ -102,83 +112,102 @@ const initialProjects = projects.filter(p => p.isVisible) || [];
     ))}
   </div>
 
-  </div>
-
   <!-- No Projects Message -->
-  <div id="emptyMessage" class="hidden text-center py-12">
-    <p class="text-gray-500">Brak projektów w tej kategorii. Wkrótce dodamy więcej realizacji!</p>
+  <div id="emptyMessage" class="hidden text-center py-20">
+    <div class="text-6xl mb-4">🏗️</div>
+    <p class="text-gray-500 text-lg">Brak projektów w tej kategorii.</p>
+    <p class="text-gray-400">Wkrótce dodamy więcej realizacji!</p>
   </div>
 </div>
 
 <!-- Lightbox Component -->
-<div id="lightbox" class="lightbox fixed inset-0 z-50 hidden items-center justify-center bg-black/90">
-  <div class="lightbox-content relative max-w-4xl max-h-[90vh] mx-4">
-    <button id="lightboxClose" class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300 transition-colors">
+<div id="lightbox" class="lightbox fixed inset-0 z-50 hidden items-center justify-center bg-black/95 backdrop-blur-md">
+  <div class="lightbox-content relative max-w-5xl max-h-[90vh] mx-4">
+    <button id="lightboxClose" class="absolute -top-12 right-0 text-white text-4xl hover:text-[#31EC56] transition-colors">
       &times;
     </button>
     
     <div class="lightbox-image-container relative">
-      <img id="lightboxImage" src="" alt="" class="max-w-full max-h-[70vh] object-contain rounded-lg" />
+      <img id="lightboxImage" src="" alt="" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl" />
       
-      <div class="lightbox-info absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white rounded-b-lg">
-        <h3 id="lightboxTitle" class="text-xl font-semibold mb-2"></h3>
-        <p id="lightboxDescription" class="text-sm opacity-90 mb-2"></p>
+      <div class="lightbox-info absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-8 text-white rounded-b-lg">
+        <h3 id="lightboxTitle" class="text-2xl font-bold mb-2"></h3>
+        <p id="lightboxDescription" class="text-sm opacity-90 mb-3"></p>
         <div class="lightbox-details flex gap-4 text-sm">
-          <span id="lightboxLocation"></span>
+          <span id="lightboxLocation" class="flex items-center gap-1">
+            <svg class="w-4 h-4 text-[#EF036C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </span>
           <span id="lightboxArea"></span>
         </div>
       </div>
     </div>
     
-    <button id="lightboxPrev" class="absolute top-1/2 -left-16 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white text-2xl w-12 h-12 rounded-full flex items-center justify-center transition-all">
+    <button id="lightboxPrev" class="absolute top-1/2 -left-20 -translate-y-1/2 bg-white/10 backdrop-blur-sm hover:bg-[#31EC56]/20 text-white text-3xl w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110">
       &#8249;
     </button>
-    <button id="lightboxNext" class="absolute top-1/2 -right-16 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white text-2xl w-12 h-12 rounded-full flex items-center justify-center transition-all">
+    <button id="lightboxNext" class="absolute top-1/2 -right-20 -translate-y-1/2 bg-white/10 backdrop-blur-sm hover:bg-[#31EC56]/20 text-white text-3xl w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110">
       &#8250;
     </button>
   </div>
 </div>
 
 <style>
-  .glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  }
-  
-  .hover-lift {
-    transition: all 0.3s ease;
-  }
-  
-  .hover-lift:hover {
-    transform: translateY(-0.5rem);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-  
   .filter-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1.25rem;
     border-radius: 9999px;
-    border: 1px solid #93c5fd;
-    color: #1d4ed8;
-    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    color: var(--color-gray-700);
+    border: 2px solid var(--color-gray-200);
   }
   
   .filter-btn:hover {
-    background-color: #eff6ff;
+    border-color: var(--color-malachite);
+    color: var(--color-malachite);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(49, 236, 86, 0.2);
   }
   
   .filter-btn.active {
-    background-color: #2563eb;
+    background: linear-gradient(135deg, var(--color-malachite) 0%, var(--color-heliotrope) 100%);
     color: white;
-    border-color: #2563eb;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(49, 236, 86, 0.3);
   }
   
   .project-card {
+    cursor: pointer;
     position: relative;
     overflow: hidden;
-    background-color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .project-card:hover {
+    transform: translateY(-8px);
+  }
+  
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-malachite), var(--color-razzmatazz), var(--color-heliotrope));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+  }
+  
+  .project-card:hover::before {
+    transform: scaleX(1);
   }
   
   .line-clamp-2 {
@@ -188,14 +217,36 @@ const initialProjects = projects.filter(p => p.isVisible) || [];
     overflow: hidden;
   }
   
+  .lightbox {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
   @media (max-width: 768px) {
     .lightbox-content #lightboxPrev,
     .lightbox-content #lightboxNext {
-      display: none;
+      position: fixed;
+      top: auto;
+      bottom: 2rem;
+      left: 2rem;
+      right: auto;
+    }
+    
+    .lightbox-content #lightboxNext {
+      left: auto;
+      right: 2rem;
     }
     
     .lightbox-content {
-      margin: 0 0.5rem;
+      margin: 0 1rem;
     }
   }
 </style>
@@ -345,57 +396,68 @@ const initialProjects = projects.filter(p => p.isVisible) || [];
       emptyMessage.classList.add('hidden');
       
       container.innerHTML = projectsToRender.map((project, index) => `
-        <div class="project-card glass-card hover-lift cursor-pointer" 
+        <div class="project-card card animate-fadeIn group" 
+             style="animation-delay: ${index * 0.1}s;"
              data-category="${project.category}"
              onclick="openLightbox('${project.id}')">
           
           <!-- Zdjęcie główne lub placeholder -->
-          <div class="project-image relative">
+          <div class="project-image relative overflow-hidden rounded-t-lg">
             ${project.images?.length > 0 ? `
               <img src="${project.images.find(img => img.isMain)?.url || project.images[0].url}" 
                    alt="${project.title}"
-                   class="w-full h-48 object-cover rounded-t-lg" 
+                   class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" 
                    loading="lazy" 
                    onerror="this.src='/UBR/images/placeholder.svg'" />
             ` : `
-              <svg width="400" height="192" xmlns="http://www.w3.org/2000/svg" class="rounded-t-lg">
+              <svg width="400" height="256" xmlns="http://www.w3.org/2000/svg" class="rounded-t-lg">
                 <defs>
                   <linearGradient id="grad-${project.category}-${index}" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#3b82f6" />
-                    <stop offset="100%" style="stop-color:#1e40af" />
+                    <stop offset="0%" style="stop-color:#31EC56" />
+                    <stop offset="50%" style="stop-color:#EF036C" />
+                    <stop offset="100%" style="stop-color:#EE72F8" />
                   </linearGradient>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#grad-${project.category}-${index})" rx="8" />
+                <rect width="100%" height="100%" fill="url(#grad-${project.category}-${index})" />
                 <text x="50%" y="40%" text-anchor="middle" fill="white" 
-                      font-family="system-ui" font-size="16" font-weight="600">
+                      font-family="system-ui" font-size="18" font-weight="700">
                   ${this.getCategoryName(project.category)}
                 </text>
                 <text x="50%" y="60%" text-anchor="middle" fill="rgba(255,255,255,0.8)" 
-                      font-family="system-ui" font-size="12">
+                      font-family="system-ui" font-size="14">
                   UBR WYKOŃCZENIA WNĘTRZ
                 </text>
               </svg>
             `}
             
             ${project.images?.length > 1 ? `
-              <div class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+              <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full">
                 📷 ${project.images.length}
               </div>
             ` : ''}
+            
+            <!-- Gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <!-- Informacje o projekcie -->
-          <div class="project-info p-4">
-            <h3 class="font-semibold text-lg mb-2">${project.title}</h3>
-            <p class="text-gray-600 text-sm mb-2">${project.location} • ${project.area || 'N/A'}</p>
-            <p class="text-gray-700 text-sm line-clamp-2">${project.description}</p>
+          <div class="project-info p-6">
+            <h3 class="font-bold text-xl mb-2 group-hover:text-[#31EC56] transition-colors duration-300">${project.title}</h3>
+            <p class="text-gray-600 text-sm mb-3 flex items-center gap-2">
+              <svg class="w-4 h-4 text-[#EF036C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              ${project.location} • ${project.area || 'N/A'}
+            </p>
+            <p class="text-gray-700 text-sm line-clamp-2 mb-4">${project.description}</p>
             
             ${project.features?.length ? `
-              <div class="features mt-3 flex flex-wrap gap-1">
+              <div class="features flex flex-wrap gap-2">
                 ${project.features.slice(0, 3).map(feature => 
-                  `<span class="bg-blue-50 text-blue-800 text-xs px-2 py-1 rounded">${feature}</span>`
+                  `<span class="bg-[#31EC56]/10 text-[#31EC56] text-xs font-medium px-3 py-1 rounded-full">${feature}</span>`
                 ).join('')}
-                ${project.features.length > 3 ? `<span class="text-gray-500 text-xs">+${project.features.length - 3}</span>` : ''}
+                ${project.features.length > 3 ? `<span class="text-gray-500 text-xs font-medium">+${project.features.length - 3}</span>` : ''}
               </div>
             ` : ''}
           </div>
@@ -472,7 +534,13 @@ const initialProjects = projects.filter(p => p.isVisible) || [];
       if (lightboxImage) lightboxImage.src = image.url;
       if (lightboxTitle) lightboxTitle.textContent = project.title;
       if (lightboxDescription) lightboxDescription.textContent = image.caption || project.description;
-      if (lightboxLocation) lightboxLocation.textContent = project.location;
+      if (lightboxLocation) lightboxLocation.innerHTML = `
+        <svg class="w-4 h-4 text-[#EF036C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        ${project.location}
+      `;
       if (lightboxArea) lightboxArea.textContent = project.area;
     }
   }

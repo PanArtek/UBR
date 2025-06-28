@@ -9,49 +9,43 @@ const navItems = [
 const currentPath = Astro.url.pathname;
 ---
 
-<nav class="bg-white/90 backdrop-blur-md shadow-xl sticky top-0 z-50 border-b border-gray-100">
+<nav class="bg-white/90 backdrop-blur-lg shadow-xl sticky top-0 z-50 border-b border-gray-100">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-20">
       <!-- Logo -->
       <div class="flex items-center flex-shrink-0">
         <a href="/UBR/" class="flex items-center group">
           <div class="relative">
-            <span class="text-3xl font-black text-gray-900 group-hover:text-orange-600 transition-colors duration-300">UBR</span>
-            <div class="absolute -bottom-1 left-0 w-0 h-1 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+            <span class="logo-font text-5xl gradient-text">UBR</span>
           </div>
-          <span class="ml-3 text-sm font-medium text-gray-600 hidden sm:block">Wykończenia Wnętrz</span>
+          <span class="ml-3 text-sm font-medium text-gray-600 hidden sm:block uppercase tracking-wider">Wykończenia Wnętrz</span>
         </a>
       </div>
       
       <!-- Desktop menu -->
-      <div class="hidden lg:flex items-center space-x-1">
+      <div class="hidden lg:flex items-center space-x-2">
         {navItems.map((item) => (
           <a
             href={item.href}
-            class={`relative px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
+            class={`relative px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 uppercase tracking-wide ${
               currentPath === item.href 
-                ? 'text-orange-600 bg-orange-50' 
-                : 'text-gray-700 hover:text-orange-600 hover:bg-gray-50'
+                ? 'text-white bg-gradient-to-r from-[#31EC56] to-[#EE72F8]' 
+                : 'text-gray-700 hover:text-[#31EC56] hover:bg-gray-50'
             }`}
           >
             {item.name}
-            {currentPath === item.href && (
-              <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-orange-500 rounded-full"></div>
-            )}
           </a>
         ))}
         
         <div class="flex items-center ml-6 space-x-3">
           <a
             href="tel:+48XXXXXXXXX"
-            class="group px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:-translate-y-0.5"
+            class="btn btn-secondary flex items-center"
           >
-            <span class="flex items-center">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-              </svg>
-              Zadzwoń
-            </span>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+            </svg>
+            Zadzwoń
           </a>
         </div>
       </div>
@@ -60,7 +54,7 @@ const currentPath = Astro.url.pathname;
       <div class="lg:hidden flex items-center">
         <button
           type="button"
-          class="mobile-menu-button p-3 rounded-xl text-gray-700 hover:text-orange-600 hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          class="mobile-menu-button p-3 rounded-lg text-gray-700 hover:text-[#31EC56] hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#31EC56]"
           aria-controls="mobile-menu"
           aria-expanded="false"
         >
@@ -74,15 +68,15 @@ const currentPath = Astro.url.pathname;
   </div>
   
   <!-- Mobile menu -->
-  <div class="mobile-menu hidden lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md">
+  <div class="mobile-menu hidden lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur-lg">
     <div class="px-4 py-6 space-y-3 max-w-sm mx-auto">
       {navItems.map((item) => (
         <a
           href={item.href}
-          class={`block px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${
+          class={`block px-4 py-3 rounded-lg font-semibold transition-all duration-200 uppercase tracking-wide ${
             currentPath === item.href
-              ? 'bg-orange-50 text-orange-600 border border-orange-200'
-              : 'text-gray-700 hover:text-orange-600 hover:bg-gray-50'
+              ? 'bg-gradient-to-r from-[#31EC56] to-[#EE72F8] text-white'
+              : 'text-gray-700 hover:text-[#31EC56] hover:bg-gray-50'
           }`}
         >
           {item.name}
@@ -92,7 +86,7 @@ const currentPath = Astro.url.pathname;
       <div class="pt-4 border-t border-gray-200">
         <a
           href="tel:+48XXXXXXXXX"
-          class="flex items-center justify-center w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg"
+          class="btn btn-secondary flex items-center justify-center w-full"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
