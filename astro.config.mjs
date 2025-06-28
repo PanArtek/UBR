@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://PanArtek.github.io/UBR',
-  base: '/',
+  base: '/UBR',
   output: 'static',
 
   build: {
