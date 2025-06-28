@@ -493,8 +493,8 @@ import Layout from '../../layouts/Layout.astro';
       submitBtn.disabled = true;
       
       try {
-        // In production, this would make API calls
-        await this.simulateApiCall();
+        // Save to localStorage (for demo/static site)
+        this.saveProjectToLocalStorage(projectData);
         
         this.showNotification(
           this.isEditMode ? 'Projekt został zaktualizowany!' : 'Projekt został dodany!',
@@ -520,8 +520,60 @@ import Layout from '../../layouts/Layout.astro';
       return 'proj-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     }
     
-    simulateApiCall() {
-      return new Promise(resolve => setTimeout(resolve, 1500));
+    saveProjectToLocalStorage(projectData) {
+      try {
+        // Get existing projects from localStorage
+        const existing = localStorage.getItem('ubr_projects');
+        let projects = existing ? JSON.parse(existing) : [];
+        
+        // Add images from preview
+        projectData.images = this.collectImageData();
+        
+        if (this.isEditMode) {
+          // Update existing project
+          const index = projects.findIndex(p => p.id === projectData.id);
+          if (index >= 0) {
+            projects[index] = { ...projects[index], ...projectData };
+          } else {
+            projects.push(projectData);
+          }
+        } else {
+          // Add new project
+          projects.push(projectData);
+        }
+        
+        // Save back to localStorage
+        localStorage.setItem('ubr_projects', JSON.stringify(projects));
+        
+        console.log('Project saved to localStorage:', projectData);
+        return Promise.resolve();
+        
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+        return Promise.reject(error);
+      }
+    }
+    
+    collectImageData() {
+      const preview = document.getElementById('imagePreview');
+      if (!preview) return [];
+      
+      const images = [];
+      const imageElements = preview.querySelectorAll('img');
+      
+      imageElements.forEach((img, index) => {
+        const captionInput = img.parentElement.querySelector('input[type="text"]');
+        images.push({
+          id: `img-${Date.now()}-${index}`,
+          url: img.src,
+          caption: captionInput ? captionInput.value : '',
+          isMain: index === 0,
+          order: index + 1,
+          filename: `local_image_${index + 1}.jpg`
+        });
+      });
+      
+      return images;
     }
     
     showNotification(message, type = 'info') {

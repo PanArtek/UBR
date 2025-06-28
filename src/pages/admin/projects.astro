@@ -175,9 +175,23 @@ import Layout from '../../layouts/Layout.astro';
     
     async loadProjects() {
       try {
-        const response = await fetch('/UBR/data/projects.json');
-        const data = await response.json();
-        this.projects = data.projects || [];
+        // Load JSON projects
+        let jsonProjects = [];
+        try {
+          const response = await fetch('/UBR/data/projects.json');
+          const data = await response.json();
+          jsonProjects = data.projects || [];
+        } catch (error) {
+          console.warn('Could not load JSON projects:', error);
+        }
+        
+        // Load localStorage projects
+        const localProjects = this.getLocalStorageProjects();
+        
+        // Combine all projects
+        this.projects = [...jsonProjects, ...localProjects]
+          .sort((a, b) => (b.order || 0) - (a.order || 0)); // Newest first
+        
         this.filteredProjects = [...this.projects];
         document.getElementById('loadingState').style.display = 'none';
       } catch (error) {
@@ -185,6 +199,16 @@ import Layout from '../../layouts/Layout.astro';
         this.projects = [];
         this.filteredProjects = [];
         document.getElementById('loadingState').style.display = 'none';
+      }
+    }
+    
+    getLocalStorageProjects() {
+      try {
+        const stored = localStorage.getItem('ubr_projects');
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error('Error reading localStorage projects:', error);
+        return [];
       }
     }
     
@@ -293,10 +317,13 @@ import Layout from '../../layouts/Layout.astro';
     }
     
     toggleVisibility(projectId) {
-      // In production, this would make an API call
       const project = this.projects.find(p => p.id === projectId);
       if (project) {
         project.isVisible = !project.isVisible;
+        
+        // Update localStorage if it's a local project
+        this.updateLocalStorageProject(project);
+        
         this.updateStats();
         this.renderProjects();
         
@@ -313,12 +340,43 @@ import Layout from '../../layouts/Layout.astro';
       if (!project) return;
       
       if (confirm(`Czy na pewno chcesz usunąć projekt "${project.title}"?\n\nTa operacja jest nieodwracalna.`)) {
-        // In production, this would make an API call
+        // Remove from localStorage if it's a local project
+        this.removeFromLocalStorage(projectId);
+        
+        // Remove from current list
         this.projects = this.projects.filter(p => p.id !== projectId);
         this.applyFilters();
         this.updateStats();
         
         this.showNotification(`Projekt "${project.title}" został usunięty`, 'success');
+      }
+    }
+    
+    updateLocalStorageProject(project) {
+      try {
+        const stored = localStorage.getItem('ubr_projects');
+        let projects = stored ? JSON.parse(stored) : [];
+        
+        const index = projects.findIndex(p => p.id === project.id);
+        if (index >= 0) {
+          projects[index] = project;
+          localStorage.setItem('ubr_projects', JSON.stringify(projects));
+        }
+      } catch (error) {
+        console.error('Error updating localStorage project:', error);
+      }
+    }
+    
+    removeFromLocalStorage(projectId) {
+      try {
+        const stored = localStorage.getItem('ubr_projects');
+        if (stored) {
+          let projects = JSON.parse(stored);
+          projects = projects.filter(p => p.id !== projectId);
+          localStorage.setItem('ubr_projects', JSON.stringify(projects));
+        }
+      } catch (error) {
+        console.error('Error removing from localStorage:', error);
       }
     }
     
